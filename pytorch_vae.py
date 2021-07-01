@@ -188,4 +188,4 @@ ax.plot(range(epochs),val_loss_arr, label="Validation Loss")
 plt.legend(loc='upper right')
 plt.savefig("loss.png")
 
-print("Finish!!")
+print("Finish!")
