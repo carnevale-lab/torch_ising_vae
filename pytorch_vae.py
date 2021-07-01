@@ -1,31 +1,49 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from torch.optim import Adam
 from torchvision import transforms, utils
 from torch.utils.data import DataLoader, random_split
+from pathlib import Path
+from config import Config
+import sys
+
 
 import matplotlib.pyplot as plt
 import numpy as np
 import random
 
-
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+conf_path = "configs/" + str(sys.argv[1])
+
+conf = Config.from_json_file(Path(conf_path))
+
+
+if conf.ACTIVATE == "ReLU":
+    activation = nn.ReLU()
+elif conf.ACTIVATE == "ELU":
+    activation = nn.ELU()
+elif conf.ACTIVATE == "SELU":
+    activation = nn.SELU()
+
+print(activation)
+
 datapath = "data/"
-batch_size = 100
-hidden_dim = 3
-x_dim  = 900
-n_count = 50
-l_dim = 7
+batch_size = conf.BATCH_SIZE
+hidden_dim = conf.LAYERS
+x_dim  = conf.IN_DIM
+n_count = conf.NUM_NODES
+l_dim = conf.LATENT
 lr = 1e-3
-epochs = 30
+epochs = conf.EPOCHS
 
 kwargs = {'num_workers': 1, 'pin_memory': True} 
 
 data_array = torch.from_numpy(np.load(datapath + 'ising.npy'))
 print(data_array.size())
-train, val = random_split(data_array,[35000,15000])
+train, val = random_split(data_array,[25000,25000])
 print(len(train))
 print(len(val))
 
@@ -103,17 +121,17 @@ class Model(nn.Module):
         return x_hat, mean, log_var
 
 enc = Encoder(enc_dim=hidden_dim, input_dim=x_dim, latent_dim=l_dim,
-activate=nn.ReLU(), node_count=n_count)
+activate=activation, node_count=n_count)
 
 dec = Decoder(dec_dim=hidden_dim, output_dim=x_dim, latent_dim=l_dim,
-activate=nn.ReLU(), node_count=n_count)
+activate=activation, node_count=n_count)
 
 model = Model(Encoder=enc, Decoder=dec).to(device)
 
 BCE_loss = nn.BCELoss()
 
 def loss_function(x, x_hat, mean, log_var):
-    reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction='sum')
+    reproduction_loss = nn.functional.binary_cross_entropy(x_hat, x, reduction='mean')
     KLD = - 0.5 * torch.sum(1+ log_var - mean.pow(2) - log_var.exp())
 
     return reproduction_loss + KLD
@@ -121,11 +139,16 @@ def loss_function(x, x_hat, mean, log_var):
 
 optimizer = Adam(model.parameters(), lr=lr)
 
+
 print("Start training VAE...")
 model.train()
 
+train_loss_arr = []
+val_loss_arr = []
+
 for epoch in range(epochs):
-    overall_loss = 0
+    train_loss = 0
+    val_loss = 0
     for batch_idx, x in enumerate(train_loader):
         x = x.float()
         x = x.view(batch_size, x_dim)
@@ -136,11 +159,33 @@ for epoch in range(epochs):
         x_hat, mean, log_var = model(x)
         loss = loss_function(x, x_hat, mean, log_var)
         
-        overall_loss += loss.item()
+        train_loss += loss.item()
         
         loss.backward()
         optimizer.step()
-        
-    print("\tEpoch", epoch + 1, "complete!", "\tAverage Loss: ", overall_loss / (batch_idx*batch_size))
+
+    train_loss_arr.append(train_loss)
+
+    for batch_idx, x in enumerate(val_loader):
+        x = x.float()
+        x = x.view(batch_size, x_dim)
+        x = x.to(device)
+        x_hat, mean, log_var = model(x)
+        loss = loss_function(x, x_hat, mean, log_var)
+        val_loss += loss.item()
+
+    val_loss_arr.append(val_loss)
     
+
+        
+    print("\tEpoch", epoch + 1, "complete!", "\tTrain Loss: ", train_loss, "\tVal Loss: ", val_loss)
+    
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.set_yscale('log')
+ax.plot(range(epochs),train_loss_arr, label="Training Loss")    
+ax.plot(range(epochs),val_loss_arr, label="Validation Loss")
+plt.legend(loc='upper right')
+plt.savefig("loss.png")
+
 print("Finish!!")
