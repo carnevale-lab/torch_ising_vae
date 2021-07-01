@@ -28,7 +28,7 @@ elif conf.ACTIVATE == "ELU":
 elif conf.ACTIVATE == "SELU":
     activation = nn.SELU()
 
-print(activation)
+print("hi")
 
 datapath = "data/"
 batch_size = conf.BATCH_SIZE
