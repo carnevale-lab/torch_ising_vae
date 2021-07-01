@@ -18,7 +18,7 @@ import random
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-conf_path = "configs/" + str(sys.argv[1])
+conf_path = "../PyTorch/configs/" + str(sys.argv[1])
 
 conf = Config.from_json_file(Path(conf_path))
 
@@ -32,7 +32,7 @@ elif conf.ACTIVATE == "SELU":
 
 print(activation)
 
-datapath = "data/"
+datapath = "../PyTorch/data/"
 batch_size = conf.BATCH_SIZE
 hidden_dim = conf.LAYERS
 x_dim  = conf.IN_DIM
