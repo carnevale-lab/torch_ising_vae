@@ -32,7 +32,7 @@ elif conf.ACTIVATE == "SELU":
 
 print(activation)
 
-datapath = "../PyTorch/data/"
+datapath = "data/"
 batch_size = conf.BATCH_SIZE
 hidden_dim = conf.LAYERS
 x_dim  = conf.IN_DIM
