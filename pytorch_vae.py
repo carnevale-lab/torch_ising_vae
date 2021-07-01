@@ -5,6 +5,8 @@ import torch.nn.functional as F
 from torch.optim import Adam
 from torchvision import transforms, utils
 from torch.utils.data import DataLoader, random_split
+from torchinfo import summary
+
 from pathlib import Path
 from config import Config
 import sys
@@ -128,6 +130,8 @@ activate=activation, node_count=n_count)
 
 model = Model(Encoder=enc, Decoder=dec).to(device)
 
+print(summary(model))
+
 BCE_loss = nn.BCELoss()
 
 def loss_function(x, x_hat, mean, log_var):
@@ -186,6 +190,6 @@ ax.set_yscale('log')
 ax.plot(range(epochs),train_loss_arr, label="Training Loss")    
 ax.plot(range(epochs),val_loss_arr, label="Validation Loss")
 plt.legend(loc='upper right')
-plt.savefig("loss.png")
+plt.savefig(f"ising_vae_plots/lyrs={hidden_dim}_n={n_count}_ldim={l_dim}_b={batch_size}_e={epochs}_act={conf.ACTIVATE}.png")
 
 print("Finish!")
