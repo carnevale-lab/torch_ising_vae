@@ -1,8 +1,8 @@
 {
     "epochs": [20, 50],
     "batch" : [250,500,1000],
-    "nodes" : [5,50,100,1000],
-    "layers": [2,3,4,5],
+    "nodes" : [50,100,500],
+    "layers": [2,3],
     "latent": [2, 5, 7, 10, 20, 50, 100],
-    "activation": ["ELU", "ReLU", "SELU"]
+    "activation": ["ELU"]
 }
