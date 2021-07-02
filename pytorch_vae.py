@@ -130,7 +130,9 @@ activate=activation, node_count=n_count)
 
 model = Model(Encoder=enc, Decoder=dec).to(device)
 
-print(summary(model))
+print(model)
+
+summary(model,col_names=["kernel_size", "num_params"])
 
 BCE_loss = nn.BCELoss()
 
@@ -186,10 +188,10 @@ for epoch in range(epochs):
     
 fig = plt.figure()
 ax = fig.add_subplot(111)
-ax.set_yscale('log')
+# ax.set_yscale('log')
 ax.plot(range(epochs),train_loss_arr, label="Training Loss")    
 ax.plot(range(epochs),val_loss_arr, label="Validation Loss")
 plt.legend(loc='upper right')
-plt.savefig(f"ising_vae_plots/lyrs={hidden_dim}_n={n_count}_ldim={l_dim}_b={batch_size}_e={epochs}_act={conf.ACTIVATE}.png")
+plt.savefig(f"ising_vae_plots/" + str(sys.argv[1]).split(".")[0] + ".png")
 
 print("Finish!")
