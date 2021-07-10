@@ -1,0 +1,81 @@
+import torch
+import torch.nn as nn
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
+import plotly
+import plotly.graph_objects as go
+from pathlib import Path
+
+
+def loss_plot(epochs, train_loss_arr, val_loss_arr, out_name):
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    # ax.set_yscale('log')
+    ax.plot(range(epochs),train_loss_arr, label="Training Loss")    
+    ax.plot(range(epochs),val_loss_arr, label="Validation Loss")
+    plt.legend(loc='upper right')
+    plt.savefig(f"training_plots/" + out_name + ".png")
+
+
+def init_mag(arr):
+    mag = []
+    for i in range(len(arr)): # Total magnetization for t-SNE coloring
+        up = np.sum(arr.numpy()[i])
+        down = -(900 - up)
+        mag.append(-(up+down)/900)
+
+    return mag
+
+def latent_plot(mean, log_var, latent_dim, mag, out_name):
+    Path("latent_plots/"+out_name).mkdir(parents=True, exist_ok=True)
+    mean = mean.cpu().numpy()
+    log_var = log_var.cpu().numpy()
+    check = []
+    for i in range(latent_dim):
+        for j in range(latent_dim):
+            if i == j or ((i,j) or (j,i)) in check:
+                continue
+            else:
+                x = list(mean[:,i])
+                y = list(mean[:,j])
+                fig = plt.figure()
+                ax = fig.add_subplot(111)
+                scat = ax.scatter(x,y,c=mag)
+                plt.colorbar(scat)
+                plt.savefig("latent_plots/"+out_name+"/latent_"+str(i)+"+"+str(j)+".png")
+                check.append((i,j))
+                plt.close('all')
+
+def tsne_plot(mean,mag,out_name):
+    mean = mean.cpu().numpy()
+    np.random.shuffle(mean)
+    fig = plt.figure()
+    ax = fig.add_subplot(111,projection='3d')
+    tsne = TSNE(n_components=3,learning_rate=100)
+    proj = tsne.fit_transform(mean[:1000])
+    # proj.shape()
+    x = list(proj[:,0])
+    y = list(proj[:,1])
+    z = list(proj[:,2])
+    # ax.scatter(x,y,z,c=mag)
+    # plt.savefig("latent.png")
+    # plt.show()
+    # fig = px.scatter_3d(proj, x=x,y=y,z=z,)
+    fig = go.Figure(data=[go.Scatter3d(
+        x=x,
+        y=y,
+        z=z,
+        mode='markers',
+        marker=dict(
+            size=12,
+            color=mag,
+            colorscale='spectral',
+            opacity=0.6
+        )
+    )])
+    fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
+    fig.update_layout(showlegend=True)
+    # fig.write_html('plot.html', auto_open=True)
+    fig.show()
+    plotly.offline.plot(fig, filename='latent_plots/'+out_name+'/latent_' +out_name+ '.html')
