@@ -29,11 +29,7 @@ class Decoder(nn.Module):
         self.eval()
         with torch.no_grad():
             latent_samples = get_latent_samples(50000,0,1,l_dim)
-            print("LATENT SAMPLES: \n", latent_samples)
             out = self.forward(torch.from_numpy(latent_samples).float().to(device))
-            print("\n DECODED SAMPLES: \n", out)
             gend = generate_seqs(out.cpu().numpy(), batch_size, l_dim)
-            # np.save("generated/genSeqs.npy", gend)
-            print("\n SEQUENCE OUTPUT: \n", gend)
             return gend
     

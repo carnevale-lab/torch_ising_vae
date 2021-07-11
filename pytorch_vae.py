@@ -60,7 +60,7 @@ activate=activation, node_count=n_count)
 
 model = Model(Encoder=enc, Decoder=dec, device=device).to(device)
 
-if len(sys.argv) > 2:
+if len(sys.argv) == 3:
     load_pickle(sys.argv[2],model)
     print(model)
     summary(model,col_names=["kernel_size", "num_params"])
@@ -112,18 +112,18 @@ elif len(sys.argv) == 2:
     save_pickle(model, out_name+"_pickle")
 
     loss_plot(epochs, train_loss_arr, val_loss_arr, "loss_plot_" + out_name)
+    
 
 mean, log_var = enc.generator(data_array, device)
 print("Enc Generation Complete")
+gend = dec.generator(l_dim, batch_size, device)
+save_npy("generated/"+out_name+"_seqs.npy", gend)
+print("Dec Generation Complete")
 mag = init_mag(data_array)
-print("Mag Init Complete")
 latent_plot(mean,log_var,l_dim, mag, out_name)
 print("Latent Plot Complete")
 tsne_plot(mean, mag, out_name)
 print("TSNE Plot Complete")
-gend = dec.generator(l_dim, batch_size, device)
-save_npy("generated/"+out_name+"_seqs.npy", gend)
-print("Dec Generation Complete")
 seqs_to_txt(out_name)
 hamming_plot(out_name)
 print("Hamming Distance Plot Complete")
