@@ -6,7 +6,6 @@ from model.Encoder import Encoder
 from model.Decoder import Decoder
 from model.Model import Model
 
-
 from torch.optim import Adam
 from torchvision import transforms, utils
 from torch.utils.data import DataLoader, random_split
@@ -14,8 +13,8 @@ from torchinfo import summary
 
 from pathlib import Path
 from config import Config
-from helpers.helpers import save_pickle, load_pickle, loss_function, save_npy
-from helpers.plotters import loss_plot, init_mag, latent_plot, tsne_plot
+from helpers.helpers import save_pickle, load_pickle, loss_function, save_npy, seqs_to_txt
+from helpers.plotters import loss_plot, init_mag, latent_plot, tsne_plot, hamming_plot
 import sys
 
 import matplotlib.pyplot as plt
@@ -129,5 +128,9 @@ tsne_plot(mean, mag, out_name)
 print("TSNE Plot Complete")
 gend = dec.generator(l_dim, batch_size, device)
 save_npy("generated/"+out_name+"_seqs.npy", gend)
+print("Dec Generation Complete")
+seqs_to_txt(out_name)
+hamming_plot(out_name)
+print("Hamming Distance Plot Complete")
 
 print("Finish!")

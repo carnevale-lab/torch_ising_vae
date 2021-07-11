@@ -1,11 +1,16 @@
 import torch
 import torch.nn as nn
+
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.manifold import TSNE
+
 import plotly
 import plotly.graph_objects as go
+from sklearn.manifold import TSNE
+
 from pathlib import Path
+from helpers.mi3gpu.utils.seqtools import histsim
+from helpers.mi3gpu.utils.seqload import loadSeqs, writeSeqs
 
 
 def loss_plot(epochs, train_loss_arr, val_loss_arr, out_name):
@@ -79,3 +84,25 @@ def tsne_plot(mean,mag,out_name):
     # fig.write_html('plot.html', auto_open=True)
     fig.show()
     plotly.offline.plot(fig, filename='latent_plots/'+out_name+'/latent_' +out_name+ '.html')
+
+def hamming_plot(out_name):
+    seqs = loadSeqs("helpers/hamstxt/orig.txt", names="01")[0][0:]
+    h = histsim(seqs).astype(float)
+    h = h/np.sum(h)
+    rev_h = h[::-1]
+
+    seqs1 = loadSeqs("helpers/hamstxt/pred.txt", names="01")[0][0:]
+    h1 = histsim(seqs1).astype(float)
+    h1 = h1/np.sum(h1)
+    rev_h1 = h1[::-1]
+
+
+    fig, ax = plt.subplots()
+
+
+    ax.plot(rev_h, label="Original")
+    ax.plot(rev_h1, label="Predicted")
+
+    plt.legend(loc="best")
+
+    plt.savefig("hamming/"+out_name+"_hamming.png")
