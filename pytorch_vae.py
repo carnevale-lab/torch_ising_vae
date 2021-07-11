@@ -26,7 +26,6 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 conf_path = "configs/" + str(sys.argv[1])
 conf = Config.from_json_file(Path(conf_path))
 
-
 if conf.ACTIVATE == "ReLU":
     activation = nn.ReLU()
 elif conf.ACTIVATE == "ELU":
@@ -112,7 +111,6 @@ elif len(sys.argv) == 2:
     save_pickle(model, out_name+"_pickle")
 
     loss_plot(epochs, train_loss_arr, val_loss_arr, "loss_plot_" + out_name)
-
 
 mean, log_var = enc.generator(data_array, device)
 print("Enc Generation Complete")
