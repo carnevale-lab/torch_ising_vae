@@ -42,9 +42,7 @@ n_count = conf.NUM_NODES
 l_dim = conf.LATENT
 lr = 1e-3
 epochs = conf.EPOCHS
-
 out_name = "E"+str(epochs)+"_B"+str(batch_size)+"_D"+str(hidden_dim)+"_N"+str(n_count)+"_L"+str(l_dim)+"_"+conf.ACTIVATE
-
 kwargs = {'num_workers': 1, 'pin_memory': True} 
 
 data_array = torch.from_numpy(np.load(datapath + 'ising.npy'))
@@ -68,7 +66,6 @@ if len(sys.argv) > 2:
     summary(model,col_names=["kernel_size", "num_params"])
 
 elif len(sys.argv) == 2:
-
     print(model)
     summary(model,col_names=["kernel_size", "num_params"])
 
@@ -85,6 +82,7 @@ elif len(sys.argv) == 2:
     for epoch in range(epochs):
         train_loss = 0
         val_loss = 0
+        
         for batch_idx, x in enumerate(train_loader):
             x = x.float()
             x = x.view(batch_size, x_dim)
