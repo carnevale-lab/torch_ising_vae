@@ -112,20 +112,31 @@ elif len(sys.argv) == 2:
     save_pickle(model, out_name+"_pickle")
 
     loss_plot(epochs, train_loss_arr, val_loss_arr, "loss_plot_" + out_name)
-    
+
 
 mean, log_var = enc.generator(data_array, device)
 print("Enc Generation Complete")
 gend = dec.generator(l_dim, batch_size, device)
 save_npy("generated/"+out_name+"_seqs.npy", gend)
 print("Dec Generation Complete")
-mag = init_mag(data_array)
-latent_plot(mean,log_var,l_dim, mag, out_name)
-print("Latent Plot Complete")
-tsne_plot(mean, mag, out_name)
-print("TSNE Plot Complete")
-seqs_to_txt(out_name)
-hamming_plot(out_name)
-print("Hamming Distance Plot Complete")
+
+
+if conf.LPLOT:
+    print("Beginning Latent Plot")
+    mag = init_mag(data_array)
+    latent_plot(mean,log_var,l_dim, mag, out_name)
+    print("Latent Plot Complete")
+
+if conf.TSNE:
+    print("Beginning TSNE Plot")
+    mag = init_mag(data_array)
+    tsne_plot(mean, mag, out_name)
+    print("TSNE Plot Complete")
+
+if conf.HAMMING:
+    print("Beginning Hamming Distance Plot")
+    seqs_to_txt(out_name)
+    hamming_plot(out_name)
+    print("Hamming Distance Plot Complete")
 
 print("Finish!")

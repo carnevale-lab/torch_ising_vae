@@ -25,9 +25,14 @@ for epoch_count in conf.epochs:
 
                     for activate in conf.activation:
                         data['ACTIVATE'] = activate
+                        data['LPLOT'] = 0
+                        data['TSNE'] = 0
+                        data['HAMMING'] = 0
                         if(num_nodes < latents):
                             continue
                         dicts.append(deepcopy(data))
+
+
 
 conf_list = []
 for i in range(len(dicts)):
