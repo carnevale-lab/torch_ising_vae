@@ -16,7 +16,6 @@ from helpers.mi3gpu.utils.seqload import loadSeqs, writeSeqs
 def loss_plot(epochs, train_loss_arr, val_loss_arr, out_name):
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    # ax.set_yscale('log')
     ax.plot(range(epochs),train_loss_arr, label="Training Loss")    
     ax.plot(range(epochs),val_loss_arr, label="Validation Loss")
     plt.legend(loc='upper right')
@@ -59,14 +58,9 @@ def tsne_plot(mean,mag,out_name):
     ax = fig.add_subplot(111,projection='3d')
     tsne = TSNE(n_components=3,learning_rate=100)
     proj = tsne.fit_transform(mean[:1000])
-    # proj.shape()
     x = list(proj[:,0])
     y = list(proj[:,1])
     z = list(proj[:,2])
-    # ax.scatter(x,y,z,c=mag)
-    # plt.savefig("latent.png")
-    # plt.show()
-    # fig = px.scatter_3d(proj, x=x,y=y,z=z,)
     fig = go.Figure(data=[go.Scatter3d(
         x=x,
         y=y,
@@ -81,7 +75,6 @@ def tsne_plot(mean,mag,out_name):
     )])
     fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
     fig.update_layout(showlegend=True)
-    # fig.write_html('plot.html', auto_open=True)
     fig.show()
     plotly.offline.plot(fig, filename='latent_plots/'+out_name+'/latent_' +out_name+ '.html')
 
@@ -96,13 +89,8 @@ def hamming_plot(out_name):
     h1 = h1/np.sum(h1)
     rev_h1 = h1[::-1]
 
-
     fig, ax = plt.subplots()
-
-
     ax.plot(rev_h, label="Original")
     ax.plot(rev_h1, label="Predicted")
-
     plt.legend(loc="best")
-
     plt.savefig("hamming/"+out_name+"_hamming.png")
