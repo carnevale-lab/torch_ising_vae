@@ -68,9 +68,6 @@ if len(sys.argv) > 2:
 elif len(sys.argv) == 2:
     print(model)
     summary(model,col_names=["kernel_size", "num_params"])
-
-    BCE_loss = nn.BCELoss()
-
     optimizer = Adam(model.parameters(), lr=lr)
 
     print("Start training VAE...")
@@ -82,7 +79,7 @@ elif len(sys.argv) == 2:
     for epoch in range(epochs):
         train_loss = 0
         val_loss = 0
-        
+
         for batch_idx, x in enumerate(train_loader):
             x = x.float()
             x = x.view(batch_size, x_dim)
