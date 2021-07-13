@@ -19,7 +19,7 @@ def loss_plot(epochs, train_loss_arr, val_loss_arr, out_name):
     ax.plot(range(epochs),train_loss_arr, label="Training Loss")    
     ax.plot(range(epochs),val_loss_arr, label="Validation Loss")
     plt.legend(loc='upper right')
-    plt.savefig(f"training_plots/" + out_name + ".png")
+    plt.savefig(out_name + "/loss_plot.png")
 
 
 def init_mag(arr):
@@ -32,7 +32,7 @@ def init_mag(arr):
     return mag
 
 def latent_plot(mean, log_var, latent_dim, mag, out_name):
-    Path("latent_plots/"+out_name).mkdir(parents=True, exist_ok=True)
+    Path(out_name+"/latent_plots").mkdir(parents=True, exist_ok=True)
     mean = mean.cpu().numpy()
     log_var = log_var.cpu().numpy()
     check = []
@@ -47,7 +47,7 @@ def latent_plot(mean, log_var, latent_dim, mag, out_name):
                 ax = fig.add_subplot(111)
                 scat = ax.scatter(x,y,c=mag)
                 plt.colorbar(scat)
-                plt.savefig("latent_plots/"+out_name+"/latent_"+str(i)+"+"+str(j)+".png")
+                plt.savefig(out_name+"/latent_plots/latent_"+str(i)+"+"+str(j)+".png")
                 check.append((i,j))
                 plt.close('all')
 
@@ -57,7 +57,7 @@ def tsne_plot(mean,mag,out_name):
     fig = plt.figure()
     ax = fig.add_subplot(111,projection='3d')
     tsne = TSNE(n_components=3,learning_rate=100)
-    proj = tsne.fit_transform(mean[:1000])
+    proj = tsne.fit_transform(mean[:15000])
     x = list(proj[:,0])
     y = list(proj[:,1])
     z = list(proj[:,2])
@@ -76,15 +76,15 @@ def tsne_plot(mean,mag,out_name):
     fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
     fig.update_layout(showlegend=True)
     fig.show()
-    plotly.offline.plot(fig, filename='latent_plots/'+out_name+'/latent_' +out_name+ '.html')
+    plotly.offline.plot(fig, filename=out_name+'/latent_plots/latent_TSNE.html')
 
 def hamming_plot(out_name):
-    seqs = loadSeqs("helpers/hamstxt/orig.txt", names="01")[0][0:]
+    seqs = loadSeqs(out_name+"/orig.txt", names="01")[0][0:]
     h = histsim(seqs).astype(float)
     h = h/np.sum(h)
     rev_h = h[::-1]
 
-    seqs1 = loadSeqs("helpers/hamstxt/pred.txt", names="01")[0][0:]
+    seqs1 = loadSeqs(out_name+"/pred.txt", names="01")[0][0:]
     h1 = histsim(seqs1).astype(float)
     h1 = h1/np.sum(h1)
     rev_h1 = h1[::-1]
@@ -93,4 +93,4 @@ def hamming_plot(out_name):
     ax.plot(rev_h, label="Original")
     ax.plot(rev_h1, label="Predicted")
     plt.legend(loc="best")
-    plt.savefig("hamming/"+out_name+"_hamming.png")
+    plt.savefig(out_name+"/hamming_plot.png")

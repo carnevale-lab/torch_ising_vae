@@ -6,14 +6,20 @@ from sklearn.manifold import TSNE
 import plotly
 import plotly.graph_objects as go
 
+def check_act(act):
+    if act == "ReLU":
+        return nn.ReLU()
+    elif act == "ELU":
+        return nn.ELU()
+    elif act == "SELU":
+        return nn.SELU()
+
 def save_pickle(model, out_name):
-    path = "pickles/" +out_name+ ".pth"
+    path = out_name+"/pickled_model.pth"
     torch.save(model.state_dict(), path)
 
-def load_pickle(path, model):
-    temp = "pickles/"
-    temp += path
-    model.load_state_dict(torch.load(temp))
+def load_pickle(model, out_name):
+    model.load_state_dict(torch.load(out_name+"/pickled_model.pth"))
 
 def save_npy(path, arr):
     np.save(path, arr)
@@ -37,18 +43,18 @@ def arr_to_str(in_arr):
 def seqs_to_txt(out_name):
     original = np.load("data/ising.npy")
     original = original.astype(int)
-    predicted = np.load("generated/"+out_name+"_seqs.npy")
+    predicted = np.load(out_name+"/genSeqs.npy")
     predicted = predicted.astype(int)
 
     orig = arr_to_str(original)
     pred = arr_to_str(predicted)
     
-    with open("helpers/hamstxt/orig.txt", "w") as f:
+    with open(out_name+"/orig.txt", "w") as f:
         for line in orig:
             f.write(line + '\n')
     f.close()
 
-    with open("helpers/hamstxt/pred.txt", "w") as g:
+    with open(out_name+"/pred.txt", "w") as g:
         for line in pred:
             g.write(line + '\n')
     g.close()
