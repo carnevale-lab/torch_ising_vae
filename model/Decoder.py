@@ -1,6 +1,6 @@
 import torch
 import torch.nn as nn
-from synth_seqs import get_latent_samples, generate_seqs
+from helpers.synth_seqs import get_latent_samples, generate_seqs
 
 class Decoder(nn.Module):
     def __init__(self, dec_dim, output_dim, latent_dim, activate, node_count):

@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from synth_seqs import get_latent_samples, generate_seqs
 from model.Encoder import Encoder
 from model.Decoder import Decoder
 from model.Model import Model
@@ -16,6 +15,7 @@ from pathlib import Path
 from config import Config
 from helpers.helpers import save_pickle, load_pickle, loss_function, save_npy, seqs_to_txt, check_act
 from helpers.plotters import loss_plot, init_mag, latent_plot, tsne_plot, hamming_plot
+from helpers.bvms import get_bvms, get_covars
 import sys
 
 import matplotlib.pyplot as plt
@@ -70,6 +70,7 @@ gend = dec.generator(model.l_dim, model.batch_size, device)
 save_npy(out_name+"/genSeqs.npy", gend)
 print("Dec Generation Complete")
 
+seqs_to_txt(out_name)
 mag = init_mag(data_array)
 
 if conf.LPLOT:
@@ -87,5 +88,22 @@ if conf.HAMMING:
     seqs_to_txt(out_name)
     hamming_plot(out_name)
     print("Hamming Distance Plot Complete")
+
+
+
+biv_orig = get_bvms("Original", "orig.txt", out_name, out_name, 2, 50000)
+get_covars("Original", biv_orig, out_name)
+biv_pred = get_bvms("Predicted", "pred.txt", out_name, out_name, 2, 50000)
+get_covars("Predicted", biv_pred, out_name)
+
+target_covars = np.load(out_name + "/covars_Original.npy")
+target_masked = np.ma.masked_inside(target_covars, -0.01, 0.01).ravel()
+target_covars = target_covars.ravel()
+pred_covars = np.load(out_name + "/covars_Predicted.npy")
+pred_masked = np.ma.masked_inside(pred_covars, -0.01, 0.01).ravel()
+pred_covars = pred_covars.ravel()
+
+pearson_r, pearson_p = pearsonr(target_covars, pred_covars)
+print(pearson_r, pearson_p)
 
 print("Finish!")
