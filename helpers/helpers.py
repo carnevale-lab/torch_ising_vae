@@ -46,16 +46,16 @@ def seqs_to_txt(out_name):
     predicted = np.load(out_name+"/genSeqs.npy")
     predicted = predicted.astype(int)
 
-    orig = arr_to_str(original)
-    pred = arr_to_str(predicted)
+    # orig = arr_to_str(original)
+    # pred = arr_to_str(predicted)
     
-    with open(out_name+"/orig.txt", "w") as f:
-        for line in orig:
+    with open(out_name+"/orig.txt", "w","utf-8") as f:
+        for line in original:
             f.write(line + '\n')
     f.close()
 
-    with open(out_name+"/pred.txt", "w") as g:
-        for line in pred:
-            g.write(line + '\n')
-    g.close()
+    # with open(out_name+"/pred.txt", "w","utf-8") as g:
+    #     for line in pred:
+    #         g.write(line + '\n')
+    # g.close()
 

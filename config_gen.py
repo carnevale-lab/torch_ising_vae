@@ -7,6 +7,7 @@ conf = Config.from_json_file(Path("gen_config.json"))
 
 data = {}
 dicts = []
+c=0
 for epoch_count in conf.epochs:
     data['EPOCHS'] = epoch_count
 
@@ -28,9 +29,11 @@ for epoch_count in conf.epochs:
                         data['LPLOT'] = 0
                         data['TSNE'] = 0
                         data['HAMMING'] = 0
+                        data['COVARS'] = 0
                         if(num_nodes < latents):
                             continue
                         dicts.append(deepcopy(data))
+                        c+=1
 
 
 
@@ -41,9 +44,23 @@ for i in range(len(dicts)):
     with open("configs/" + outname, 'w') as outfile:
         json.dump(dicts[i], outfile)
 
-commfile = open("hpo_commands", "w")
-for i in range(len(conf_list)):
-    commfile.write("python pytorch_vae.py " + conf_list[i] + '\n')
+
+f1= open("commands1", "w")
+for i in range(270):
+    f1.write("python pytorch_vae.py " + conf_list[i] + " loss1.txt" + '\n')
+
+f2 = open("commands2", "w")
+for i in range(270):
+    f2.write("python pytorch_vae.py " + conf_list[i+270] + " loss2.txt" + '\n')
+
+f3 = open("commands3", "w")
+for i in range(270):
+    f3.write("python pytorch_vae.py " + conf_list[i+540] + " loss3.txt" + '\n')
+
+f4 = open("commands4", "w")
+for i in range(270):
+    f4.write("python pytorch_vae.py " + conf_list[i+810] + " loss4.txt" + '\n')
+
 
 
 

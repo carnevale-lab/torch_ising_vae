@@ -4,5 +4,5 @@
     "nodes" : [50,100,500],
     "layers": [1,2,3],
     "latent": [2, 5, 7, 10, 20, 50, 100],
-    "activation": ["ELU", "SELU", "ReLU"]
+    "activation": ["ELU", "ReLU", "SELU"]
 }

@@ -1,0 +1,4 @@
+epochs,batch_size,hidden_dim,nodes,latent,activation,correlation
+20,250,1,50,7,SELU,0.016264246959507275
+20,250,1,50,2,ELU,0.014745321133630387
+20,250,1,50,2,ELU,0.00372437023077416

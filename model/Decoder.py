@@ -17,7 +17,8 @@ class Decoder(nn.Module):
         self.activation = activate
         
     def forward(self, x):
-        h = self.activation(self.dec_dict["z"](x))
+        # h = self.activation(self.dec_dict["z"](x))
+        h = self.dec_dict["z"](x)
 
         for i in range(self.dim):
             h = self.activation(self.dec_dict["dec_"+str(i+1)](h))
